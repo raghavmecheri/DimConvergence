@@ -3,7 +3,6 @@ from sklearn.datasets import load_digits, fetch_openml, fetch_olivetti_faces, fe
 from sklearn.preprocessing import StandardScaler
 from .sampler import Sampler
 from .result import Result
-from scipy.spatial.distance import cdist
 
 import umap
 from sklearn.manifold import TSNE
@@ -30,19 +29,22 @@ OPENML_MAP = {
 }
 
 def _spread(emb_x, y):
-	print("WARNING: Spread loss function not implemented yet. Returning zero...")
-	return 0
+	raise Exception("WARNING: Spread loss function not implemented yet. Returning zero...")
 
 def _avg_recall(emb_x, y):
 	print("WARNING: Average recall measure function not implemented yet. Returning zero...")
 	return 0
 
 def _interpoint(emb_x, y):
+	from scipy.spatial.distance import cdist
 	return np.mean(cdist(emb_x, emb_x, metric='euclidean'))
 
-LOSSES = {
+EXP_ONE_LOSSES = {
 	"spread": _spread,
-	"avgrecall": _avg_recall,
+	"avgrecall": _avg_recall
+}
+
+EXP_TWO_LOSSES = {
 	"interpoint": _interpoint
 }
 
@@ -95,6 +97,8 @@ class Experiment():
 
 class ExperimentOne(Experiment):
 	def __init__(self, size, sampling, convergence, dataset, algorithm):
+		if convergence not in EXP_ONE_LOSSES:
+			raise Exception("{} function not defined for experiment one. Only losses in the format f(emb_x, y) are supported.".format(convergence))
 		super().__init__(size, sampling, convergence, dataset, algorithm)
 
 	def run(self):
