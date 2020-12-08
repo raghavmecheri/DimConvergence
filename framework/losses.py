@@ -2,6 +2,7 @@
 from sklearn.neighbors import NearestNeighbors
 from sklearn.metrics import pairwise_distances
 import numpy as np
+from numpy.linalg import norm
 
 K_VALUES = [10, 20, 30, 40, 50, 60]
 EPSILON_VALUES = [1, 3, 5, 7, 9]
@@ -89,7 +90,11 @@ def get_latent_pr(latent, embedded):
     return _get_epsilon_pr(latent, embedded, latent=True)
 
 
-
+def interpoint_distance(x1, x2):
+    net = 0
+    for a,b in zip(x1, x2):
+        net += norm(a-b)
+    return net
 
 
 
