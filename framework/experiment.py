@@ -3,6 +3,7 @@ from sklearn.datasets import load_digits, fetch_openml, fetch_olivetti_faces, fe
 from sklearn.preprocessing import StandardScaler
 from .sampler import Sampler
 from .result import Result
+from .losses import get_KNN_precision
 
 import umap
 from sklearn.manifold import TSNE
@@ -31,13 +32,17 @@ OPENML_MAP = {
 def _spread(emb_x, y):
 	raise Exception("WARNING: Spread loss function not implemented yet. Returning zero...")
 
-def _avg_recall(emb_x, y):
-	print("WARNING: Average recall measure function not implemented yet. Returning zero...")
-	return 0
+
 
 def _interpoint(emb_x, y):
 	from scipy.spatial.distance import cdist
 	return np.mean(cdist(emb_x, emb_x, metric='euclidean'))
+
+def nn_precision(X, emb_x):
+	return get_KNN_precision(X, emb_x, mode="NN")
+
+def fn_precision(X, emb_x):
+	return get_KNN_precision(X, emb_x, mode="FN")
 
 EXP_ONE_LOSSES = {
 	"spread": _spread,
