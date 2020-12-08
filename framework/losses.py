@@ -4,7 +4,7 @@ from sklearn.metrics import pairwise_distances
 import numpy as np
 
 K_VALUES = [10, 20, 30, 40, 50, 60]
-EPSILON_VALUES = [1, 3, 5, 7, 9]
+EPSILON_VALUES = [0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 0.8]
 
 def _get_k_neighborhood(dataset, k, radius=False):
     if radius:
@@ -56,41 +56,49 @@ def get_KNN_precision(original, embedded, mode="NN"):
 
     return result
 
-def _get_epsilon_pr(dataset, embedded, latent=False):
-    result = []
-
+def _get_epsilon_neighborhood_pr(dataset, embedded, latent=False):
+    if latent:
+        print("Warning Latent Embedding distances not built. Returning 0")
+        return 0
+    
+    result_precision, result_recall = [], []
+    
     for epsilon in EPSILON_VALUES:
+        dataset_sim = _get_similarity_matrix(dataset)
+        embedded_sim = _get_similarity_matrix(embedded)
+        
         precision, recall = 0,0
-
-        if latent:
-            print("Warning Latent Embedding distances not built. Returning 0")
-            return 0
-
-        dataset_neighbors  = _get_k_neighborhood(dataset, epsilon, radius=True)
-        embedded_neighbors  = _get_k_neighborhood(embedded, epsilon, radius=True)
-
-        for x,y in zipped(dataset, embedded):
-
-            x_neighbors = dataset_neighbors.radius_neighbors(x.reshape(1,-1), return_distance=False)
-            y_neighbors = embedded_neighbors.radius_neighbors(y.reshape(1, -1), return_distance=False)
+        
+        for ind in range(len(embedded)):
             
-            precision += len(np.intersect1d(x_neighbors, y_neighbors))/len(y_neighbors)
-            recall += len(np.intersect1d(x_neighbors, y_neighbors))/len(x_neighbors)
-
+            d_mask = dataset_sim[ind] > epsilon
+            emb_mask = embedded_sim[ind] > epsilon
+            intersection = np.logical_and(d_mask, embedded_mask)
+            
+            intersection_count = np.count_nonzero(intersection)
+            d_count = np.count_nonzero(d_mask)
+            emb_count = np.count_nonzero(emb_mask)
+            
+            if emb_count:
+                precision += intersection_count/emb_count
+            if d_count:
+                recall += intersection_count/d_count
+                
         precision = precision/len(embedded)
         recall = recall/len(embedded)
 
-        result.append(tuple(precision, recall))
+        result_precision.append(precision)
+        result_recall.append(recall)
+    return result_precision, result_recall
 
 def get_original_pr(original, embedded):
     return _get_epsilon_pr(original, embedded)
 
 def get_latent_pr(latent, embedded):
     return _get_epsilon_pr(latent, embedded, latent=True)
-
-
-
-
+            
+            
+            
 
 
 
