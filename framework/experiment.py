@@ -4,6 +4,7 @@ from sklearn.datasets import load_digits, fetch_openml, fetch_olivetti_faces, fe
 from sklearn.preprocessing import StandardScaler
 from .sampler import Sampler
 from .result import Result
+from .losses import get_KNN_precision
 
 import umap
 from sklearn.manifold import TSNE
@@ -25,9 +26,7 @@ def _fetch_coil():
 def _spread(emb_x, y):
 	raise Exception("WARNING: Spread loss function not implemented yet. Returning zero...")
 
-def _avg_recall(emb_x, y):
-	print("WARNING: Average recall measure function not implemented yet. Returning zero...")
-	return 0
+
 
 def _none_loss(emb_x, y):
 	return 0
@@ -42,6 +41,12 @@ OPENML_MAP = {
 	"olivetti": _fetch_olivetti,
 	"coil20": _fetch_coil
 }
+
+def nn_precision(X, emb_x):
+	return get_KNN_precision(X, emb_x, mode="NN")
+
+def fn_precision(X, emb_x):
+	return get_KNN_precision(X, emb_x, mode="FN")
 
 EXP_ONE_LOSSES = {
 	"spread": _spread,
