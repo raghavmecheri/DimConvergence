@@ -3,7 +3,7 @@ import math
 from sklearn.preprocessing import StandardScaler
 from .sampler import Sampler
 from .result import Result
-from .losses import get_KNN_precision
+from .losses import get_KNN_precision, get_original_pr
 from .fetcher import _fetch_mnist, _fetch_fasion_mnist, _fetch_olivetti, _fetch_coil
 
 import umap
@@ -32,8 +32,8 @@ def _nn_precision(X, emb_x, _):
 def _fn_precision(X, emb_x, _):
 	return get_KNN_precision(X, emb_x, mode="FN")
 
-def _epsilon_precision_recall():
-	return get_original_precision_recall(X, emb_x)
+def _epsilon_precision_recall(X, emb_x, _):
+	return get_original_pr(X, emb_x)
 
 EXP_ONE_LOSSES = {
 	"spread": _spread,
@@ -72,7 +72,7 @@ class Experiment():
 
 			_throw_if_invalid(size, _fix_linspace(np.linspace(0,1,11).tolist()), "size")
 			_throw_if_invalid(sampling, ["random", "stratified"], "sampling")
-			_throw_if_invalid(convergence, ["spread", "avgrecall", "interpoint", "nn_precision", "fn_precision", "none"], "convergence")
+			_throw_if_invalid(convergence, ["spread", "avgrecall", "interpoint", "nn_precision", "fn_precision","epsilon_precision_recall", "none"], "convergence")
 			_throw_if_invalid(dataset, ["mnist", "fmnist", "olivetti", "coil20"], "dataset")
 			_throw_if_invalid(algorithm, ["umap", "tsne"], "algorithm")
 
