@@ -1,39 +1,13 @@
 import numpy as np
 import math
-from sklearn.datasets import load_digits, fetch_openml, fetch_olivetti_faces, fetch_20newsgroups
 from sklearn.preprocessing import StandardScaler
 from .sampler import Sampler
 from .result import Result
 from .losses import get_KNN_precision
+from .fetcher import _fetch_mnist, _fetch_fasion_mnist, _fetch_olivetti, _fetch_coil
 
 import umap
 from sklearn.manifold import TSNE
-
-def _fetch_mnist():
-	return load_digits()
-
-def _fetch_fasion_mnist():
-	return fetch_openml(name="Fashion-MNIST")
-
-def _fetch_olivetti():
-	return fetch_olivetti_faces()
-
-def _fetch_coil():
-	raise Exception("20newsgroups not supported at the moment!")
-	# Ref: https://scikit-learn.org/stable/modules/generated/sklearn.datasets.fetch_20newsgroups.html
-	return fetch_20newsgroups()
-
-def _spread(emb_x, y):
-	raise Exception("WARNING: Spread loss function not implemented yet. Returning zero...")
-
-
-
-def _none_loss(emb_x, y):
-	return 0
-
-def _interpoint(x1, x2):
-	print("WARNING: Interpoint distance function not implemented yet. Returning zero...")
-	return 0
 
 OPENML_MAP = {
 	"mnist": _fetch_mnist,
@@ -42,15 +16,26 @@ OPENML_MAP = {
 	"coil20": _fetch_coil
 }
 
-def nn_precision(X, emb_x):
+def _none_loss(*args):
+	return 0
+
+def _interpoint(x1, x2):
+	print("WARNING: Interpoint distance function not implemented yet. Returning zero...")
+	return 0
+
+def _spread(_, emb_x, y):
+	raise Exception("WARNING: Spread loss function not implemented yet. Returning zero...")
+
+def _nn_precision(X, emb_x, _):
 	return get_KNN_precision(X, emb_x, mode="NN")
 
-def fn_precision(X, emb_x):
+def _fn_precision(X, emb_x, _):
 	return get_KNN_precision(X, emb_x, mode="FN")
 
 EXP_ONE_LOSSES = {
 	"spread": _spread,
-	"avgrecall": _avg_recall,
+	"nn_precision": _nn_precision,
+	"fn_precision": _fn_precision,
 	"none": _none_loss
 }
 
@@ -112,8 +97,8 @@ class Experiment():
 		embedding = reducer.fit_transform(scaled_data)
 		return embedding
 
-	def loss(self, emb_x, y):
-		return LOSSES[self.convergence](emb_x, y)
+	def loss(self, X, emb_x, y):
+		return LOSSES[self.convergence](X, emb_x, y)
 
 	def run(self):
 		raise Exception("Not implemented in base class")
@@ -127,7 +112,7 @@ class ExperimentOne(Experiment):
 	def run(self):
 		dataset, labels = self.generate_dataset()
 		emb_x = self.embed(dataset, labels)
-		return Result(self.size, self.sampling, self.convergence, self.dataset, self.algorithm, self.loss(emb_x, labels), emb_x, labels)
+		return Result(self.size, self.sampling, self.convergence, self.dataset, self.algorithm, self.loss(dataset, emb_x, labels), emb_x, labels)
 
 class ExperimentTwo(Experiment):
 	def __init__(self, size, sampling, convergence, dataset, algorithm):
@@ -150,4 +135,4 @@ class ExperimentTwo(Experiment):
 	def run(self):
 		dataset, labels, dataset_h, labels_h = self.generate_dataset()
 		emb_x = self.embed(dataset, labels, dataset_h, labels_h)
-		return Result(self.size, self.sampling, self.convergence, self.dataset, self.algorithm, self.loss(emb_x, labels_h), emb_x, labels)
+		return Result(self.size, self.sampling, self.convergence, self.dataset, self.algorithm, self.loss(dataset, emb_x, labels_h), emb_x, labels)
