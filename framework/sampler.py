@@ -18,54 +18,36 @@ def _decouple(coupled):
 class Sampler():
 	def __init__(self, stype="random"):
 		self.stype = stype
+		self.x_holdout = None
+		self.y_holdout = None
 
-	def _random(self, dataset, fraction):
-		size = int(len(dataset.target) * fraction)
-		sample_set = _couple(dataset.data, dataset.target)
+	def _random(self, x, y, fraction):
+		size = int(len(x) * fraction)
+		sample_set = _couple(x, y)
 		return _decouple(random.sample(sample_set, size))
 
-	def _hist(self, dataset, fraction):
-		size = int(len(dataset.target) * fraction)
-		def _transform(data):
-			x = []
-			for point in data:
-				x.append(norm(point))
-			return x
-		def _hist_group(data, coupled, target_size):
-			coupled = np.array(data)
-			q1, q2, q3 = quantile(coupled, 0.25), quantile(coupled, 0.5), quantile(coupled, 0.75)
-			stratified = defaultdict(list)
-			for x, y in coupled:
-				key = "q1"
-				if x > q1 and x <= q2:
-					key = "q2"
-				elif x > q2 and x <= q3:
-					key = "q3"
-				else:
-					key = "q4"
-				stratified[key].append(tuple([x,y]))
+	def _stratified(self, x, y, fraction):
+		if fraction == 1:
+			return x, y
 
-			per_class = int(target_size/stratified.keys())
-			for key in stratified.keys():
-				rs = random.sample(stratified[key], per_class)
-				x += rs
-
-			return x
-
-		datapoints = _transform(dataset.data)
-		sample_set = _couple(datapoints, dataset.target)
-		return _decouple(_hist_group(datapoints, sample_set, size))
-
-	def _stratified(self, dataset, fraction):
-		x, y = dataset.data, dataset.target
 		x_target, _, y_target, _ = train_test_split(x, y, test_size=(1-fraction), random_state=42)
 		return x_target, y_target
 
-	def run(self, dataset, fraction):
+	def run(self, dataset, fraction, holdout=0):
+		x, y = dataset.data, dataset.target
+		
+		if holdout == 0:
+			x_target = x
+			y_target = y
+		else:
+			x_target, x_holdout, y_target, y_holdout = train_test_split(x, y, test_size=holdout, random_state=42)
+			self.x_holdout = x_holdout
+			self.y_holdout = y_holdout
+
 		if self.stype == "random":
-			return self._random(dataset, fraction)
-		elif self.stype == "hist":
-			raise Exception("Histogram sampling not implemented")
-			return self._hist(dataset, fraction)
+			return self._random(x_target, y_target, fraction)
 		elif self.stype == "stratified":
-			return self._stratified(dataset, fraction)
+			return self._stratified(x_target, y_target, fraction)
+
+	def fetch_holdout(self):
+		return self.x_holdout, self.y_holdout
