@@ -7,7 +7,7 @@ from .losses import get_KNN_precision
 from .fetcher import _fetch_mnist, _fetch_fasion_mnist, _fetch_olivetti, _fetch_coil
 
 import umap
-from sklearn.manifold import TSNE
+from openTSNE import TSNE
 
 OPENML_MAP = {
 	"mnist": _fetch_mnist,
@@ -68,7 +68,7 @@ class Experiment():
 
 			_throw_if_invalid(size, _fix_linspace(np.linspace(0,1,11).tolist()), "size")
 			_throw_if_invalid(sampling, ["random", "stratified"], "sampling")
-			_throw_if_invalid(convergence, ["spread", "avgrecall", "interpoint", "none"], "convergence")
+			_throw_if_invalid(convergence, ["spread", "avgrecall", "interpoint", "nn_precision", "fn_precision", "none"], "convergence")
 			_throw_if_invalid(dataset, ["mnist", "fmnist", "olivetti", "coil20"], "dataset")
 			_throw_if_invalid(algorithm, ["umap", "tsne"], "algorithm")
 
@@ -88,14 +88,16 @@ class Experiment():
 		if self.algorithm == "umap":
 			reducer = umap.UMAP()
 		else:
-			reducer = TSNE(n_components=2)
+			reducer = TSNE()
 		return reducer
 
 	def embed(self, dataset, labels):
 		reducer = self.fetch_algorithm()
 		scaled_data = StandardScaler().fit_transform(dataset)
-		embedding = reducer.fit_transform(scaled_data)
-		return embedding
+		if self.algorithm == "umap":
+			return reducer.fit_transform(scaled_data)
+		embedding = reducer.fit(scaled_data)
+		return embedding.transform(scaled_data)
 
 	def loss(self, X, emb_x, y):
 		return LOSSES[self.convergence](X, emb_x, y)
@@ -128,9 +130,16 @@ class ExperimentTwo(Experiment):
 
 	def embed(self, dataset, labels, dataset_h, labels_h):
 		reducer = self.fetch_algorithm()
-		scaled_data = StandardScaler().fit_transform(dataset)
-		reducer.fit(dataset)
-		return reducer.transform(dataset_h)
+		ss = StandardScaler()
+		scaled_data = ss.fit_transform(dataset)
+		scaled_holdout = ss.transform(dataset_h)
+
+		if self.algorithm == "umap":
+			reducer.fit(scaled_data)
+			return reducer.transform(scaled_holdout)
+
+		embedding = reducer.fit(scaled_data)
+		return embedding.transform(scaled_holdout)
 
 	def run(self):
 		dataset, labels, dataset_h, labels_h = self.generate_dataset()
