@@ -32,10 +32,14 @@ def _nn_precision(X, emb_x, _):
 def _fn_precision(X, emb_x, _):
 	return get_KNN_precision(X, emb_x, mode="FN")
 
+def _epsilon_precision_recall():
+	return get_original_precision_recall(X, emb_x)
+
 EXP_ONE_LOSSES = {
 	"spread": _spread,
 	"nn_precision": _nn_precision,
 	"fn_precision": _fn_precision,
+	"epsilon_precision_recall": _epsilon_precision_recall,
 	"none": _none_loss
 }
 
