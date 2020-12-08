@@ -3,6 +3,9 @@ from sklearn.neighbors import NearestNeighbors
 from sklearn.metrics import pairwise_distances
 import numpy as np
 from numpy.linalg import norm
+import scipy
+from sklearn.metrics.pairwise import rbf_kernel as rbf
+
 
 K_VALUES = [10, 20, 30, 40, 50, 60]
 EPSILON_VALUES = [0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 0.8]
@@ -14,6 +17,10 @@ def _get_k_neighborhood(dataset, k, radius=False):
 
     neighbors = NearestNeighbors(n_neighbors=k, algorithm='ball_tree').fit(dataset)
     return neighbors
+
+def _get_similarity_matrix(dataset):
+    gamma = (1/np.var(pairwise_distances(dataset)))*0.1
+    return rbf(dataset, gamma=gamma)
 
 
 def get_KNN_precision(original, embedded, mode="NN"):
@@ -68,13 +75,14 @@ def _get_epsilon_neighborhood_pr(dataset, embedded, latent=False):
         dataset_sim = _get_similarity_matrix(dataset)
         embedded_sim = _get_similarity_matrix(embedded)
 
-        precision, recall = 0,0
+        precision = 0
+        recall = 0
 
         for ind in range(len(embedded)):
 
             d_mask = dataset_sim[ind] > epsilon
             emb_mask = embedded_sim[ind] > epsilon
-            intersection = np.logical_and(d_mask, embedded_mask)
+            intersection = np.logical_and(d_mask, emb_mask)
 
             intersection_count = np.count_nonzero(intersection)
             d_count = np.count_nonzero(d_mask)
@@ -93,7 +101,7 @@ def _get_epsilon_neighborhood_pr(dataset, embedded, latent=False):
     return result_precision, result_recall
 
 def get_original_pr(original, embedded):
-    return _get_epsilon_pr(original, embedded)
+    return _get_epsilon_neighborhood_pr(original, embedded)
 
 def get_latent_pr(latent, embedded):
     return _get_epsilon_pr(latent, embedded, latent=True)
