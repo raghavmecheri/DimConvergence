@@ -112,9 +112,9 @@ class Experiment():
     def fetch_algorithm(self):
         reducer = None
         if self.algorithm == "umap":
-            reducer = umap.UMAP()
+            reducer = umap.UMAP(random_state=42)
         else:
-            reducer = TSNE()
+            reducer = TSNE(random_state=42)
         return reducer
 
     def embed(self, dataset, labels):
