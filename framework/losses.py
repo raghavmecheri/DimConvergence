@@ -7,14 +7,14 @@ import scipy
 from sklearn.metrics.pairwise import rbf_kernel as rbf
 
 
-K_VALUES = [5, 10, 20, 30, 40, 50, 60, 70, 80, 90]
+K_VALUES = [5, 10, 20, 30, 40, 50, 60]
 
 def _get_k_neighborhood(dataset, k, radius=False):
     if radius:
-        neighbours = NearestNeighbors(radius=k, algorithm='ball_tree').fit(dataset)
+        neighbours = NearestNeighbors(radius=k, algorithm='ball_tree', n_jobs=2).fit(dataset)
         return neighbours
 
-    neighbors = NearestNeighbors(n_neighbors=k, algorithm='ball_tree').fit(dataset)
+    neighbors = NearestNeighbors(n_neighbors=k, algorithm='ball_tree', n_jobs=2).fit(dataset)
     return neighbors
 
 def get_KNN_precision(original, embedded, mode="NN"):
