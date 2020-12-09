@@ -20,6 +20,7 @@ grid = {
 }
 
 def _gs(filename):
+	print("Running ExperimentTwo pointing to: {}".format(str(filename)))
 	gs = Grid(grid, ExperimentTwo)
 	results = gs.run()
 	results_json = [x.fetch() for x in results]

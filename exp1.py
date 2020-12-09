@@ -14,12 +14,13 @@ def _save(obj, name):
 grid = {
 "size": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
 "sampling": ["random", "stratified"],
-"convergence": ["nn_precision", "fn_precision"],
+"convergence": ["scatter", "nn_precision", "fn_precision","epsilon_precision_recall"],
 "dataset": ["mnist", "fmnist", "olivetti"],
 "algorithm": ["umap", "tsne"]
 }
 
 def _gs(filename):
+	print("Running ExperimentOne pointing to: {}".format(str(filename)))
 	gs = Grid(grid, ExperimentOne)
 	results = gs.run()
 	results_json = [x.fetch() for x in results]

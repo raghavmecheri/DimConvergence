@@ -9,6 +9,14 @@ from sklearn.metrics.pairwise import rbf_kernel as rbf
 
 K_VALUES = [5, 10, 20, 30, 40, 50, 60, 70, 80, 90]
 
+def calculate_distances(X):
+    N = X.shape[0]
+    ss = np.sum(X**2, axis=1)
+    dist = np.reshape(ss, [N, 1]) + np.reshape(ss, [1, N]) - 2*np.dot(X, X.T)
+    dist = dist * np.asarray(dist>0,'float32')
+    return dist
+
+
 def _get_k_neighborhood(dataset, k, radius=False):
     if radius:
         neighbours = NearestNeighbors(radius=k, algorithm='ball_tree').fit(dataset)

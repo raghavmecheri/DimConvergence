@@ -29,14 +29,15 @@ def _scatter(_, emb_x, y):
 	mean = np.mean(emb_x, axis=0)
 	for point, label in zip(emb_x, y):
 		dd[label].append(point)
-	num, denom = 0
+	num, denom = 0, 0
 
 	for label, items in dict(dd).items():
 		local_mean = np.mean(items, axis=0)
-		num += np.matmul((local_mean-mean), (local_mean-mean).T)
-		denmom += np.var(items, axis=0)
+		diff = np.array([(local_mean-mean)])
+		num += np.matmul(diff, diff.T)[0][0]
+		denom += np.linalg.norm(np.var(items, axis=0)) ** 2
 
-	return num/denmom
+	return num/denom
 
 def _nn_precision(X, emb_x, _):
 	return get_KNN_precision(X, emb_x, mode="NN")
