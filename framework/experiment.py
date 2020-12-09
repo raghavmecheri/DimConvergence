@@ -23,8 +23,20 @@ def _interpoint(x1, x2):
 	print("WARNING: Interpoint distance function not implemented yet. Returning zero...")
 	return 0
 
-def _spread(_, emb_x, y):
-	raise Exception("WARNING: Spread loss function not implemented yet. Returning zero...")
+def _scatter(_, emb_x, y):
+	from collections import defaultdict
+	dd = defaultdict(list)
+	mean = np.mean(emb_x, axis=0)
+	for point, label in zip(emb_x, y):
+		dd[label].append(point)
+	num, denom = 0
+
+	for label, items in dict(dd).items():
+		local_mean = np.mean(items, axis=0)
+		num += np.matmul((local_mean-mean), (local_mean-mean).T)
+		denmom += np.var(items, axis=0)
+
+	return num/denmom
 
 def _nn_precision(X, emb_x, _):
 	return get_KNN_precision(X, emb_x, mode="NN")
@@ -36,7 +48,7 @@ def _epsilon_precision_recall(X, emb_x, _):
 	return get_original_pr(X, emb_x)
 
 EXP_ONE_LOSSES = {
-	"spread": _spread,
+	"scatter": _scatter,
 	"nn_precision": _nn_precision,
 	"fn_precision": _fn_precision,
 	"epsilon_precision_recall": _epsilon_precision_recall,
@@ -72,7 +84,7 @@ class Experiment():
 
 			_throw_if_invalid(size, _fix_linspace(np.linspace(0,1,11).tolist()), "size")
 			_throw_if_invalid(sampling, ["random", "stratified"], "sampling")
-			_throw_if_invalid(convergence, ["spread", "avgrecall", "interpoint", "nn_precision", "fn_precision","epsilon_precision_recall", "none"], "convergence")
+			_throw_if_invalid(convergence, ["scatter", "avgrecall", "interpoint", "nn_precision", "fn_precision","epsilon_precision_recall", "none"], "convergence")
 			_throw_if_invalid(dataset, ["mnist", "fmnist", "olivetti", "coil20"], "dataset")
 			_throw_if_invalid(algorithm, ["umap", "tsne"], "algorithm")
 
