@@ -1,5 +1,5 @@
 from framework.grid import Grid
-from framework.experiment import ExperimentOne
+from framework.experiment import ExperimentTwo
 
 import pickle
 

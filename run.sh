@@ -1,4 +1,5 @@
 rm -rf data/
 mkdir data/
-nohup python -u exp1.py &
-nohup python -u exp2.py &
+rm -rf *.out
+nohup python -u exp1.py &> exponelog.out &
+nohup python -u exp2.py &> exptwolog.out &
