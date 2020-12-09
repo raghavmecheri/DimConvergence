@@ -5,6 +5,8 @@ import pickle
 
 from multiprocessing import Pool
 
+CONVERGENCE = ["scatter", "nn_precision", "fn_precision", "epsilon_precision_recall"]
+
 PROCESSES = 10
 
 def _save(obj, name):
@@ -14,17 +16,15 @@ def _save(obj, name):
 grid = {
 "size": [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
 "sampling": ["random", "stratified"],
-"convergence": ["scatter", "nn_precision", "fn_precision","epsilon_precision_recall"],
-"dataset": ["mnist", "fmnist", "olivetti"],
+"dataset": ["mnist", "olivetti"],
 "algorithm": ["umap", "tsne"]
 }
 
 def _gs(filename):
 	print("Running ExperimentOne pointing to: {}".format(str(filename)))
-	gs = Grid(grid, ExperimentOne)
+	gs = Grid(grid, CONVERGENCE, ExperimentOne, progress=False)
 	results = gs.run()
-	results_json = [x.fetch() for x in results]
-	_save(results_json, filename)
+	_save(results, filename)
 
 def main():
 	targets = ["data/experimentone_{}.pkl".format(str(x+1)) for x in range(0, PROCESSES)]
