@@ -122,6 +122,7 @@ def _get_epsilon_neighborhood_pr(dataset, embedded, latent=False):
 
             if emb_count:
                 precision += intersection_count/emb_count
+
             if d_count:
                 recall += intersection_count/d_count
 
