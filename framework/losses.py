@@ -9,14 +9,6 @@ from sklearn.metrics.pairwise import rbf_kernel as rbf
 
 K_VALUES = [5, 10, 20, 30, 40, 50, 60, 70, 80, 90]
 
-def calculate_distances(X):
-    N = X.shape[0]
-    ss = np.sum(X**2, axis=1)
-    dist = np.reshape(ss, [N, 1]) + np.reshape(ss, [1, N]) - 2*np.dot(X, X.T)
-    dist = dist * np.asarray(dist>0,'float32')
-    return dist
-
-
 def _get_k_neighborhood(dataset, k, radius=False):
     if radius:
         neighbours = NearestNeighbors(radius=k, algorithm='ball_tree').fit(dataset)
@@ -24,40 +16,6 @@ def _get_k_neighborhood(dataset, k, radius=False):
 
     neighbors = NearestNeighbors(n_neighbors=k, algorithm='ball_tree').fit(dataset)
     return neighbors
-
-def _get_similarity_matrix(dataset):
-    gamma = (1/np.var(pairwise_distances(dataset)))*0.1
-    return rbf(dataset, gamma=gamma)
-
-def _compute_embedded_similarities(Y):
-    N = Y.shape[0]
-    sqdistance = calculate_distances(Y)
-    one_over = 1./(sqdistance + 1)
-    p_Yp_given_Y =  one_over/one_over.sum(axis=1).reshape((N, 1)) 
-    return p_Yp_given_Y
-
-def _compute_original_similarities(X, sigma, metric, approxF=0):
-
-    N = X.shape[0]
-    sigma = np.full((1, 1797), sigma)
-    if metric == 'euclidean':
-        sqdistance = calculate_distances(X)
-    elif metric == 'precomputed':
-        sqdistance = X**2
-    else:
-        raise Exception('Invalid metric')
-    euc_dist     = np.exp(-sqdistance / (np.reshape(2*(sigma**2), [N, 1])))
-    np.fill_diagonal(euc_dist, 0.0 )
-
-    if approxF > 0:
-        sorted_euc_dist = euc_dist[:,:]
-        np.sort(sorted_euc_dist, axis=1)
-        row_sum = np.reshape(np.sum(sorted_euc_dist[:,1:approxF+1], axis=1), [N, 1])
-    else:
-        row_sum = np.reshape(np.sum(euc_dist, axis=1), [N, 1])
-
-    return euc_dist/row_sum 
-
 
 def get_KNN_precision(original, embedded, mode="NN"):
     result = []
@@ -103,6 +61,44 @@ def get_KNN_precision(original, embedded, mode="NN"):
 
 EPSILON_VALUES = [0.0000001, 0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.1, 1]
 
+def calculate_distances(X):
+    N = X.shape[0]
+    ss = np.sum(X**2, axis=1)
+    dist = np.reshape(ss, [N, 1]) + np.reshape(ss, [1, N]) - 2*np.dot(X, X.T)
+    dist = dist * np.asarray(dist>0,'float32')
+    return dist
+
+def _compute_embedded_similarities(Y):
+    N = Y.shape[0]
+    sqdistance = calculate_distances(Y)
+    one_over = 1./(sqdistance + 1)
+    p_Yp_given_Y =  one_over/one_over.sum(axis=1).reshape((N, 1)) 
+    return p_Yp_given_Y
+
+def _compute_original_similarities(X, sigma, metric, approxF=0):
+
+    N = X.shape[0]
+    sigma = np.full((1, 1797), sigma)
+    if metric == 'euclidean':
+        sqdistance = calculate_distances(X)
+    elif metric == 'precomputed':
+        sqdistance = X**2
+    else:
+        raise Exception('Invalid metric')
+    euc_dist     = np.exp(-sqdistance / (np.reshape(2*(sigma**2), [N, 1])))
+    np.fill_diagonal(euc_dist, 0.0 )
+
+    if approxF > 0:
+        sorted_euc_dist = euc_dist[:,:]
+        np.sort(sorted_euc_dist, axis=1)
+        row_sum = np.reshape(np.sum(sorted_euc_dist[:,1:approxF+1], axis=1), [N, 1])
+    else:
+        row_sum = np.reshape(np.sum(euc_dist, axis=1), [N, 1])
+
+    return euc_dist/row_sum
+
+
+
 def _get_epsilon_neighborhood_pr(dataset, embedded, latent=False):
     if latent:
         print("Warning Latent Embedding distances not built. Returning 0")
@@ -123,14 +119,12 @@ def _get_epsilon_neighborhood_pr(dataset, embedded, latent=False):
             d_mask = dataset_sim[ind] > epsilon
             emb_mask = embedded_sim[ind] > epsilon
             intersection = np.logical_and(d_mask, emb_mask)
-            
             intersection_count = np.count_nonzero(intersection)
             d_count = np.count_nonzero(d_mask)
             emb_count = np.count_nonzero(emb_mask)
 
             if emb_count:
                 precision += intersection_count/emb_count
-
             if d_count:
                 recall += intersection_count/d_count
 
