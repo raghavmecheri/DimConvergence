@@ -24,11 +24,14 @@ class Grid():
         results = []
         permutations = [dict(zip(keys, v)) for v in itertools.product(*values)]
         permutations = tqdm(permutations) if self.progress == True else permutations
+        ctr = 0
         for permutation in permutations:
+            if self.progress == False:
+                print("Complete: {} of {}".format(str(ctr), str(len(permutations))))
             size = permutation['size']
             sampling = permutation['sampling']
             dataset = permutation['dataset']
             algorithm = permutation['algorithm']
             results += self.exp_class(size, sampling, self.convergence, dataset, algorithm).run()
-
+            ctr += 1
         return results
