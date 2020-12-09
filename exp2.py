@@ -1,7 +1,7 @@
-import pickle
-
 from framework.grid import Grid
-from framework.experiment import ExperimentTwo
+from framework.experiment import ExperimentOne
+
+import pickle
 
 from multiprocessing import Pool
 
@@ -12,7 +12,7 @@ def _save(obj, name):
 		pickle.dump(obj, f)
 
 grid = {
-"size": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+"size": [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
 "sampling": ["random", "stratified"],
 "convergence": ["none"],
 "dataset": ["mnist", "fmnist", "olivetti"],
@@ -30,3 +30,6 @@ def main():
 	targets = ["data/experimenttwo_{}.pkl".format(str(x+1)) for x in range(0, PROCESSES)]
 	pool = Pool(PROCESSES)
 	pool.map(_gs, targets)
+
+if __name__ == '__main__':
+	main()
