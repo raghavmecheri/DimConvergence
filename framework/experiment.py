@@ -174,7 +174,7 @@ class ExperimentTwo(Experiment):
 
     def generate_dataset(self): 
         x, y = self.sampler.run(OPENML_MAP[self.dataset](), self.size, holdout=EXP_TWO_HOLDOUT)
-        x_h, y_h = sampler.fetch_holdout()
+        x_h, y_h = self.sampler.fetch_holdout()
         return x, y, x_h, y_h
 
     def embed(self, dataset, labels, dataset_h, labels_h):

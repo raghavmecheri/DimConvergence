@@ -18,15 +18,15 @@ def _decouple(coupled):
 class Sampler():
 	def __init__(self, stype="random"):
 		self.stype = stype
-                self.sampling = stype
+		self.sampling = stype
 		self.x_holdout = None
 		self.y_holdout = None
-                self.rs = np.random.randint(1,1000)
+		self.rs = np.random.randint(1,1000)
 
 	def _random(self, x, y, fraction):
 		size = int(len(x) * fraction)
 		sample_set = _couple(x, y)
-                random.seed(self.rs)
+		random.seed(self.rs)
 		return _decouple(random.sample(sample_set, size))
 
 	def _stratified(self, x, y, fraction):
