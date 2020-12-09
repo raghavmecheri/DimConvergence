@@ -7,8 +7,7 @@ import scipy
 from sklearn.metrics.pairwise import rbf_kernel as rbf
 
 
-K_VALUES = [10, 20, 30, 40, 50, 60]
-EPSILON_VALUES = [0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 0.8]
+K_VALUES = [5, 10, 20, 30, 40, 50, 60, 70, 80, 90]
 
 def _get_k_neighborhood(dataset, k, radius=False):
     if radius:
@@ -94,7 +93,7 @@ def get_KNN_precision(original, embedded, mode="NN"):
     return result
 
 
-EPSILON_VALUES = [0.0000001, 0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.1]
+EPSILON_VALUES = [0.0000001, 0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.1, 1]
 
 def _get_epsilon_neighborhood_pr(dataset, embedded, latent=False):
     if latent:
