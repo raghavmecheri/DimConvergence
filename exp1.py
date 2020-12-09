@@ -5,7 +5,7 @@ import pickle
 
 from multiprocessing import Pool
 
-CONVERGENCE = ["scatter", "nn_precision", "fn_precision","epsilon_precision_recall"]
+CONVERGENCE = ["scatter", "nn_precision", "fn_precision", "epsilon_precision_recall"]
 
 PROCESSES = 10
 
@@ -16,7 +16,7 @@ def _save(obj, name):
 grid = {
 "size": [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
 "sampling": ["random", "stratified"],
-"dataset": ["mnist", "fmnist", "olivetti"],
+"dataset": ["mnist", "olivetti"],
 "algorithm": ["umap", "tsne"]
 }
 
