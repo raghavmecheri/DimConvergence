@@ -78,14 +78,14 @@ def _compute_embedded_similarities(Y):
 def _compute_original_similarities(X, sigma, metric, approxF=0):
 
     N = X.shape[0]
-    sigma = np.full((1, 1797), sigma)
+    sigma = np.full((1, N), sigma)
     if metric == 'euclidean':
         sqdistance = calculate_distances(X)
     elif metric == 'precomputed':
         sqdistance = X**2
     else:
         raise Exception('Invalid metric')
-    euc_dist     = np.exp(-sqdistance / (np.reshape(2*(sigma**2), [N, 1])))
+    euc_dist = np.exp(-sqdistance / (np.reshape(2*(sigma**2), [N, 1])))
     np.fill_diagonal(euc_dist, 0.0 )
 
     if approxF > 0:
