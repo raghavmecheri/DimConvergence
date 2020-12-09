@@ -18,19 +18,22 @@ def _decouple(coupled):
 class Sampler():
 	def __init__(self, stype="random"):
 		self.stype = stype
+                self.sampling = stype
 		self.x_holdout = None
 		self.y_holdout = None
+                self.rs = np.random.randint(1,1000)
 
 	def _random(self, x, y, fraction):
 		size = int(len(x) * fraction)
 		sample_set = _couple(x, y)
+                random.seed(self.rs)
 		return _decouple(random.sample(sample_set, size))
 
 	def _stratified(self, x, y, fraction):
 		if fraction == 1:
 			return x, y
 
-		x_target, _, y_target, _ = train_test_split(x, y, test_size=(1-fraction), random_state=42)
+		x_target, _, y_target, _ = train_test_split(x, y, test_size=(1-fraction), random_state=self.rs)
 		return x_target, y_target
 
 	def run(self, dataset, fraction, holdout=0):

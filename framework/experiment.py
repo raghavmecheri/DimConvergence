@@ -101,13 +101,13 @@ class Experiment():
         _check_param_validity(size, sampling, convergence, dataset, algorithm)
 
         self.size = size
-        self.sampling = sampling
         self.convergence = convergence
         self.dataset = dataset
         self.algorithm = algorithm
+        self.sampler = Sampler(sampling)
 
     def generate_dataset(self):
-        return Sampler(self.sampling).run(OPENML_MAP[self.dataset](), self.size)
+        return self.sampler.run(OPENML_MAP[self.dataset](), self.size)
 
     def fetch_algorithm(self):
         reducer = None
@@ -153,7 +153,7 @@ class ExperimentOne(Experiment):
             c, l = loss
             items.append({
                 "size": self.size,
-                "sampling": self.sampling,
+                "sampling": self.sampler.sampling,
                 "dataset": self.dataset,
                 "algorithm": self.algorithm,
                 "emb_x": emb_x,
@@ -172,10 +172,8 @@ class ExperimentTwo(Experiment):
                 raise Exception("{} function not defined for experiment two. Only losses in the format f(emb_x1, emb_x2) are supported.".format(c))
         super().__init__(size, sampling, convergence, dataset, algorithm)
 
-    def generate_dataset(self):
-        sampler = Sampler(self.sampling)
-        x, y = sampler.run(OPENML_MAP[self.dataset]
-                           (), self.size, holdout=EXP_TWO_HOLDOUT)
+    def generate_dataset(self): 
+        x, y = self.sampler.run(OPENML_MAP[self.dataset](), self.size, holdout=EXP_TWO_HOLDOUT)
         x_h, y_h = sampler.fetch_holdout()
         return x, y, x_h, y_h
 
@@ -201,7 +199,7 @@ class ExperimentTwo(Experiment):
             c, l = loss
             items.append({
                 "size": self.size,
-                "sampling": self.sampling,
+                "sampling": self.sampler.sampling,
                 "dataset": self.dataset,
                 "algorithm": self.algorithm,
                 "emb_x": emb_x,
