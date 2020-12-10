@@ -17,14 +17,11 @@
             </section>
             <section>
                <section>
-                  <b>Overview</b>: Dimensionality Reduction: UMAP & t-SNE in particular
+                  <b>Overview</b>: UMAP & t-SNE
                </section>
                <section>
-                  <h4>General Overview</h4>
+                  <h4>Dimensionality Reduction: General Overview</h4>
                   In the most general sense, dimensionality reduction is all about trying to map a set of points to a lower dimensional space -- but we already know this, so we're going to skip the general stuff :)
-               </section>
-               <section>
-                  Dimensionality Reduction
                </section>
                <section>
                   <h4>t-Sne: A Recap</h4>
@@ -35,6 +32,10 @@
                      <li>
                         Attempts to preserve <b>only</b> local geometry -- a focus on preserving the similarity between points in local neighbourhoods
                      </li>
+                  </ul>
+               </section>
+               <section>
+                  <ul>
                      <li>
                         Underlying concept: Model the original and embedded space neighbourhoods as a probability distributions, and then find a low dimensional embedding that reduces the KL-divergence between them. 
                      </li>
@@ -47,13 +48,13 @@
                   <h4>t-SNE: The Issues</h4>
                   <ul>
                      <li>
-                       It doesn't learn an explicit function to map new points (note: this can be worked around by treating this as an optimisation problem, but there's no f(x) that serves as a mapping)
+                        It does not preserve global structure (only local). This results in it being more useful for visualisation than general dim reduction
                      </li>
                      <li>
                         t-SNE has many hyper-parameters that need to be defined empirically (dataset-specific)
                      </li>
                      <li>
-                        It does not preserve global structure (only local)
+                        It doesn't learn an explicit function to map new points (note: this can be worked around by treating this as an optimisation problem, but there's no f(x) that serves as a mapping)
                      </li>
                   </ul>
                </section>
@@ -113,14 +114,14 @@
                   <img src="https://umap-learn.readthedocs.io/en/latest/_images/how_umap_works_umap_graph.png">
                </section>
                <section>
-                  <li>Using this graph as our original space representation, we optimise for the embedding space representation using cross entropy.</li>
+                  Using this graph as our original space representation, we optimise for the embedding space representation using cross entropy.
                   <img src=cross.png alt='cross'>
                </section>
                <section>
                   <h4>UMAP: Summary</h4>
                   <ul>
                      <li>
-                        Efficient, non linear dimensionality reduction. O(n) complexity
+                        Efficient, non linear dimensionality reduction. O(nd) complexity
                      </li>
                      <li>
                         It can use any distance metric -- isn't restricted to Euclidian space!
@@ -169,7 +170,7 @@
                   <h4>Experiments</h4>
                   <ol>
                      <li>
-                        Understanding how the spread, furthest-nearest neighbour comparision, and epsilon-ball precision-recall curves vary across various sizes of these datasets, for both random and stratified sampling, and across algorithms
+                        Understanding how the spread, KNN & FNN scores, and epsilon-ball precision-recall curves vary across various sizes of these datasets, for both random and stratified sampling, and across algorithms
                      </li>
                      <li>
                         Understanding the variation of inter-point distance as n scales for two of these datasets (MNIST, Olivetti faces) for both random and stratified sampling, and across algorithms
@@ -201,14 +202,14 @@
                   <li>Does a UMAP / tSNE representation "stabilise"?</li>
                </section>
                <section>
-                  <li> We used KNN and FNN precision scores to measure how UMAP preserved the structure of the data </li>
-                  <li> If local structure is well-preserved, then the NN in the original data space should match the NN in the embedded space <li>
+                  <li> We used KNN and FNN precision scores to measure how UMAP preserved the structure of the data</li>
+                  <li> If local structure is well-preserved, then the NN in the original data space should match the NN in the embedded space</li>
                </section>
                <section>
                   <img src="knnfnn.png" alt="KNN-FNN">
                </section>
                <section>
-                  Does the precision wrt similarity measures change as we increase the data?
+                  Does the precision with respect to similarity measures change as we increase the data?
                </section>
                <section>
                   <img src="umapepsilon.png" alt="umap-epsilon">
