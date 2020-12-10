@@ -68,33 +68,49 @@
                   </ul>
                </section>
                <section>
-                  <h4>UMAP: How does it work?</h4>
-                  UMAP relies on constructing a topological representation for a given dataset, and then attempting to build a dimension reduction algorithm by finding a low dimensional representation of the data that has a similar topological representation.
-               </section>
-               <section>
+                  <h4>UMAP: Assumptions and Concept</h4>
                   <ul>
                      <li>
-                        Based on working with <a href="https://en.wikipedia.org/wiki/Simplex">simplices</a>: topological structures in multidimensional space. Points are connected with an edge if the distance between them is below a defined threshold. Constructing simplicial complexes (or collections of simplices) beforehand allows UMAP to calculate relative point distances in a target dimension (these are probabilistically assigned in t-SNE)
+                        Data lies on a manifold
                      </li>
                      <li>
-                        These simplices are built by <a href="https://en.wikipedia.org/wiki/%C4%8Cech_cohomology">Cech Comology</a>, which is based on working with the intersections of open covers in a topological space.
+                        This manifold is locally connected (no holes)
+                     </li>
+                     <li>
+                        Construct a <b>topological</b> representation of the data in the ambient and embedded space
+                     </li>
+                     <li>
+                        Minimise cross-entropy across topological structures
                      </li>
                   </ul>
                </section>
                <section>
-                  <h4>Points -> Simplical Complex (Step 1: Test Data)</h4>
-                  <img src="https://umap-learn.readthedocs.io/en/latest/_images/how_umap_works_raw_data.png">
+                  <h4> k-Simplex: convex hull of k+1 points</h4>>
+                  <img src="https://umap-learn.readthedocs.io/en/latest/_images/simplices.png">
                </section>
                <section>
-                  <h4>Points -> Simplical Complex (Step 2: Open Covers)</h4>
+                  <h4>Simple Cover</h4>
                   <img src="https://umap-learn.readthedocs.io/en/latest/_images/how_umap_works_open_cover.png">
                </section>
                <section>
-                  <h4>Points -> Simplical Complex (Step 3: Graph Construction)</h4>
+                  <h4>Unconnected Manifold</h4>
                   <img src="https://umap-learn.readthedocs.io/en/latest/_images/how_umap_works_basic_graph.png">
                </section>
                <section>
-                  UMAP then uses this representation of a dataset to learns the global structure of the data, making it less dependant on random initialisation. It can also recreate low dimensional embedding regardless of the dataset size.
+                  <h4>Vary metric in each neighborhood</h4>
+                  <img src="https://umap-learn.readthedocs.io/en/latest/_images/how_umap_works_local_metric_open_cover.png">
+               </section>
+               <section>
+                  <h4>Take fuzzy union across balls</h4>
+                  <img src="https://umap-learn.readthedocs.io/en/latest/_images/how_umap_works_fuzzy_open_cover.png">
+               </section>
+               <section>
+                  <h4>End up with a graph representation</h4>
+                  <img src="https://umap-learn.readthedocs.io/en/latest/_images/how_umap_works_umap_graph.png">
+               </section>
+               <section>
+                  <li>Using this graph as our original space representation, we optimise for the embedding space representation using cross entropy.</li>>
+                  <img src=cross.png alt='cross'>
                </section>
                <section>
                   <h4>UMAP: Summary</h4>
