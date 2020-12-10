@@ -12,7 +12,7 @@
                   Raghav Mecheri & Ketan Jog
                </section>
                <section>
-                  <b>Project Goal:</b> To understand how the convergence of an algorithm like UMAP is affected by different input and output metrics, as well as my dataset size
+                  <b>Project Goal:</b> Perform an Empirical Analysis of UMAP, to study properties like convergence and embedding quality
                </section>
             </section>
             <section>
@@ -32,7 +32,7 @@
                         Attempts to preserve <b>only</b> local geometry -- a focus on preserving the similarity between points in local neighbourhoods
                      </li>
                      <li>
-                        Underlying concept: Model the neighbourhood structure as a probability distribution, and then find a low dimensional mapping that matches this same distribution
+                        Underlying concept: Model the original and embedded space neighbourhoods as a probability distributions, and then find a low dimensional embedding that reduces the KL-divergence between them. 
                      </li>
                      <li>
                         Non deterministic (if you run it multiple times, you don't always get the same output unless you lock a seed)
@@ -180,10 +180,74 @@
                   Here were our initial impressions
                </section>
                <section>
-                  Some other stuff here
+                  <li>To understand how an embedding of data in R^2 is affected as the amount of data increases</li>
+                  <li>Does a UMAP / tSNE representation "stabilise"?</li>
                </section>
                <section>
-                  Some other stuff here
+                  <li> We used KNN and FNN precision scores to measure how UMAP preserved the structure of the data </li>
+                  <li> If local structure is well-preserved, then the NN in the original data space should match the NN in the embedded space <li>
+               </section>
+               <section>
+                  <img src="knnfnn.png" alt="KNN-FNN">
+               </section>
+               <section>
+                  Does the precision wrt similarity measures change as we increase the data?
+               </section>
+               <section>
+                  <img src="umapepsilon.png" alt="umap-epsilon">
+               </section>
+               <section>
+                  Is this just the effect of working with more data? Well...
+               </section>
+               <section>
+                  <img src="tsneepsilon.png" alt="tsne-epsilon">
+               </section>
+               <section>
+                  Lets look at whether UMAP (or tSNE) converge to a single representation...what could measure this?
+               </section>
+               <section>
+                  <li>We chose the LDA score (ie intercluster distance V intracluster distance)</li>
+                  <li> Turns out that scatter converges to a value on some dataset.-algorithm pairs..
+               </section>
+               <section>
+                  <img src="scat_mnist_stable.png" alt="scat-mnist-stable">
+               </section>
+               <section>
+                  <img src="scat_olivetti_stable.png" alt="scat-olivetti-stable">
+               </section>
+               <section>
+                  Other times, it doesn't......
+               </section>
+               <section>
+                  <img src="scat_ unstable.png" alt="scat-unstable">
+               </section>
+               <section>
+                  <li> This needs further exploration</li>
+                  <li> Does it mean there is a "sufficient" amount of data that allows us to render a stable embedding of the distribution into the dataset?</li>
+               </section>
+               <section>
+                  <li>We now look at the "embedded space". How do we measure the difference between 2 embeddings</li>
+                  <li> Interpoint Distance: Look at the L2 deviation of an embedded datapoint from one embedding to the other</li>
+               </section>
+               <section>
+                  We look at the deviation of Avg Interpoint Distance of the "true" embedding from that generated from less data.
+               </section>
+               <section>
+                  <img src="truth_stable.png" alt="truth-stable">
+               </section>
+               <section>
+                  <img src="conv_true.png" alt="conv-true">
+               </section>
+               <section>
+                  <img src="conv_increment.png" alt="conv-increment">
+               </section>
+               <section>
+                  <li>UMAP needs a much smaller set of data to narrow down on an embedding </li>>
+                  <li>The method of sampling didn’t seem to have much of an effect on the performance </li>>
+               </section>
+               <section>
+                  <li>UMAP requires a much smaller dataset than tSNE to rightly model an embedded space. On the other hand, we could also say tSNE improves the embedding as we scale with data</li>>
+                  <li> Test by measuring clustering performance</li>
                </section>
             </section>
             <section>
@@ -231,6 +295,28 @@
                      </li>
                      <li>
                         The curse of dimensionality is definitely playing a part here. But how much?
+                     </li>
+                  </ul>
+               </section>
+               <section>
+                  <h4>Clustering Performance on UMAP</h4>
+                  <ul>
+                     <li>
+                        Use UMAP as a preprocessing step, and see how clustering improves as n grows...stability?
+                     </li>
+                     <li>
+                        Might help understand if the theres a "sufficient" amount of data that models a data distribution well.
+                     </li>
+                  </ul>
+               </section>
+               <section>
+                  <h4>Semi-supervised UMAP</h4>
+                  <ul>
+                     <li>
+                        Can weak labelling or labelling a small subset accelerate "convergence"
+                     </li>
+                     <li>
+                        How much does labelling affect performance (value of UMAP as an unsupervised method)
                      </li>
                   </ul>
                </section>
