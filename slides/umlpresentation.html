@@ -8,7 +8,7 @@
          <div class="slides">
             <section>
                <section>
-                  <h3>Convergence of Dimensionality Reduction</h3>
+                  <h3>Exploring UMAP & t-SNE performance</h3>
                   Raghav Mecheri & Ketan Jog
                </section>
                <section>
@@ -27,7 +27,7 @@
                   <h4>t-Sne: A Recap</h4>
                   <ul>
                      <li>
-                        Used primarily for visualisation (since it ignores global structure!)
+                        Used primarily for visualisation
                      </li>
                      <li>
                         Attempts to preserve <b>only</b> local geometry -- a focus on preserving the similarity between points in local neighbourhoods
@@ -170,10 +170,10 @@
                   <h4>Experiments</h4>
                   <ol>
                      <li>
-                        Understanding how the spread, KNN & FNN scores, and epsilon-ball precision-recall curves vary across various sizes of these datasets, for both random and stratified sampling, and across algorithms
+                        Understanding how the spread, KNN & KFN scores, and epsilon-neighbourhood precision curves vary across various sizes of these datasets, for both random and stratified sampling, and across algorithms
                      </li>
                      <li>
-                        Understanding the variation of inter-point distance as n scales for two of these datasets (MNIST, Olivetti faces) for both random and stratified sampling, and across algorithms
+                        Understanding the variation of inter-point distance as n scales for both random and stratified sampling, and across algorithms
                      </li>
                   </ol>
                </section>
@@ -271,17 +271,6 @@
             <section>
                <section>
                   <h4>Future Work</h4>
-                  <ul>
-                     <li>
-                        Studying the impact of n on convergence on data of different configurations
-                     </li>
-                     <li>
-                        Understanding the impact of various (input, output) metric pairs on UMAP's performance as the size of the dataset scales
-                     </li>
-                     <li>
-                        Studying the potential issues with measurement of performance of dimensionality reduction
-                     </li>
-                  </ul>
                </section>
                <section>
                   <h4>Studying various data configurations</h4>
