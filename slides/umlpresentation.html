@@ -23,31 +23,160 @@
                   Dimensionality Reduction
                </section>
                <section>
-                  We've covered some of these already! PCA, tSNE
+                  <h4>t-Sne: A Recap</h4>
+                  <ul>
+                     <li>
+                        Used primarily for visualisation (since it ignores global structure!)
+                     </li>
+                     <li>
+                        Attempts to preserve <b>only</b> local geometry -- a focus on preserving the similarity between points in local neighbourhoods
+                     </li>
+                     <li>
+                        Underlying concept: Model the neighbourhood structure as a probability distribution, and then find a low dimensional mapping that matches this same distribution
+                     </li>
+                     <li>
+                        Non deterministic (if you run it multiple times, you don't always get the same output unless you lock a seed)
+                     </li>
+                  </ul>
                </section>
                <section>
-                  What is UMAP? Why is it different?
+                  <h4>t-SNE: The Issues</h4>
+                  <ul>
+                     <li>
+                       It doesn't learn an explicit function to map new points (note: this can be worked around by treating this as an optimisation problem, but there's no f(x) that serves as a mapping)
+                     </li>
+                     <li>
+                        t-SNE has many hyper-parameters that need to be defined empirically (dataset-specific)
+                     </li>
+                     <li>
+                        It does not preserve global structure (only local)
+                     </li>
+                  </ul>
+               </section>
+               <section>
+                  <h4>UMAP: An Overview</h4>
+                  <ul>
+                     <li>
+                        Can be used for both visualisation, but also for <b>general</b> dimensionality reduction
+                     </li>
+                     <li>
+                        It preserves both local, and global structure (to an extent)
+                     </li>
+                     <li>
+                        Any distance metric can be used with UMAP
+                     </li>
+                  </ul>
+               </section>
+               <section>
+                  <h4>UMAP: How does it work?</h4>
+                  UMAP relies on constructing a topological representation for a given dataset, and then attempting to build a dimension reduction algorithm by finding a low dimensional representation of the data that has a similar topological representation.
+               </section>
+               <section>
+                  <ul>
+                     <li>
+                        Based on working with <a href="https://en.wikipedia.org/wiki/Simplex">simplices</a>: topological structures in multidimensional space. Points are connected with an edge if the distance between them is below a defined threshold. Constructing simplicial complexes (or collections of simplices) beforehand allows UMAP to calculate relative point distances in a target dimension (these are probabilistically assigned in t-SNE)
+                     </li>
+                     <li>
+                        These simplices are built by <a href="https://en.wikipedia.org/wiki/%C4%8Cech_cohomology">Cech Comology</a>, which is based on working with the intersections of open covers in a topological space.
+                     </li>
+                  </ul>
+               </section>
+               <section>
+                  <h4>Points -> Simplical Complex (Step 1: Test Data)</h4>
+                  <img src="https://umap-learn.readthedocs.io/en/latest/_images/how_umap_works_raw_data.png">
+               </section>
+               <section>
+                  <h4>Points -> Simplical Complex (Step 2: Open Covers)</h4>
+                  <img src="https://umap-learn.readthedocs.io/en/latest/_images/how_umap_works_open_cover.png">
+               </section>
+               <section>
+                  <h4>Points -> Simplical Complex (Step 3: Graph Construction)</h4>
+                  <img src="https://umap-learn.readthedocs.io/en/latest/_images/how_umap_works_basic_graph.png">
+               </section>
+               <section>
+                  UMAP then uses this representation of a dataset to learns the global structure of the data, making it less dependant on random initialisation. It can also recreate low dimensional embedding regardless of the dataset size.
+               </section>
+               <section>
+                  <h4>UMAP: Summary</h4>
+                  <ul>
+                     <li>
+                        Efficient, non linear dimensionality reduction. O(n) complexity
+                     </li>
+                     <li>
+                        It can use any distance metric -- isn't restricted to Euclidian space!
+                     </li>
+                     <li>
+                        Not completely stochastic like t-SNE
+                     </li>
+                     <li>
+                        Defines both local and global structure, <b>and</b> creates a deterministic bijection for a mapping
+                     </li>
+                  </ul>
                </section>
             </section>
             <section>
                <section>
-                  <h4>Our Experiment</h4>
+                  <h4>Our Experiment (Original)</h4>
                   Can we use UMAP's ability to hot-swap metrics in order to understand how the stability and convergence of dimensionality reduction varies with both the size of the dataset, and the input/output metrics?
                </section>
                <section>
-                  <h4>Measuring Convergence</h4>
-                  Some other stuff here
+                  <h4>Our Experiment (Modified)</h4>
+                  Can we study the behavior and performance of UMAP and t-SNE as the size of our dataset scales?
                </section>
                <section>
-                  Some other stuff here
+                  <h4>Algorithms considered</h4>
+                  <ul>
+                     <li>
+                        UMAP
+                     </li>
+                     <li>
+                        t-SNE
+                     </li>
+                  </ul>
                </section>
                <section>
-                  Some other stuff here
+                  <h4>Datasets considered</h4>
+                  <ul>
+                     <li>
+                        MNIST
+                     </li>
+                     <li>
+                        Fashion MNIST
+                     </li>
+                     <li>
+                        Olivetti faces
+                     </li>
+                  </ul>
+               </section>
+               <section>
+                  <h4>Experiments</h4>
+                  <ol>
+                     <li>
+                        Understanding how the spread, furthest-nearest neighbour comparision, and epsilon-ball precision-recall curves vary across various sizes of these datasets, for both random and stratified sampling, and across algorithms
+                     </li>
+                     <li>
+                        Understanding the variation of inter-point distance as n scales for two of these datasets (MNIST, Olivetti faces) for both random and stratified sampling, and across algorithms
+                     </li>
+                  </ol>
+               </section>
+               <section>
+                  <h4>Experimental Notes</h4>
+                  <ul>
+                     <li>10 runs of every experimental combination were recorded, in order to remove potential variance</li>
+                     <li>Different random seeds were fixed per experimental run, in order to keep experimental results constant within runs</li>
+                  </ul>
+               </section>
+               <section>
+                  <ul>
+                     <li>A fixed holdout set was considered for every run of our second experiment, in order to evaluate the inter-point distance of new data in an existing embedding</li>
+                     <li>Modified versions of the <a href="https://umap-learn.readthedocs.io/en/latest/">umap-learn</a> and <a href="https://opentsne.readthedocs.io/en/latest/">openTSNE</a>, an accelerated t-SNE package, were used</li>
+                     <li>Embedding new points into an existing t-SNE embedding was treated as an optimisation problem, more on this <a href="https://opentsne.readthedocs.io/en/latest/">here</a></li>
+                  </ul>
                </section>
             </section>
             <section>
                <section>
-                  <h4>Experimental Results</h4>
+                  <h4>Experimental Inferences</h4>
                   Here were our initial impressions
                </section>
                <section>
@@ -65,24 +194,45 @@
                         Studying the impact of n on convergence on data of different configurations
                      </li>
                      <li>
-                        Understanding the impact of various (input, output) metric pairs
+                        Understanding the impact of various (input, output) metric pairs on UMAP's performance as the size of the dataset scales
                      </li>
                      <li>
-                        Studying the potential issues with measurement of convergence (curse of dimensionality)
+                        Studying the potential issues with measurement of performance of dimensionality reduction
                      </li>
                   </ul>
                </section>
                <section>
                   <h4>Studying various data configurations</h4>
-                  Some other stuff here
+                  <ul>
+                     <li>
+                        Can we understand which data configurations scale better with size?
+                     </li>
+                     <li>
+                        Our current experiments show us a trend -- certain datasets seem to scale better with size, but we could be mistaken here
+                     </li>
+                  </ul>
                </section>
                <section>
                   <h4>Studying different (input, output) metric pairs</h4>
-                  Some other stuff here
+                  <ul>
+                     <li>
+                        UMAP allows us to hot-swap input-output metric pairs while performing dimensionality reduction
+                     </li>
+                     <li>
+                        We think it would be cool to think about how the input-output metric pair could potentially influence how well we can reduce the dimensionality of data, both dependant and independant of n
+                     </li>
+                  </ul>
                </section>
                <section>
                   <h4>Understanding convergence across dimensions</h4>
-                  Some other stuff here
+                  <ul>
+                     <li>
+                        A lot of the techniques we've used depend on dimensionality -- are we messing up by assuming that metrics like points covered by an epsilon ball are even valid
+                     </li>
+                     <li>
+                        The curse of dimensionality is definitely playing a part here. But how much?
+                     </li>
+                  </ul>
                </section>
             </section>
          </div>
